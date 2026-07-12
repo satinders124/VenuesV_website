@@ -65,8 +65,18 @@
       });
 
       if (error) throw error;
+
+      // Supabase intentionally returns a masked user (no identities) if this
+      // email already exists. This commonly happens after a network interruption
+      // created an unconfirmed account. Resend the confirmation code instead of
+      // leaving the owner unable to continue their signup.
       if (!data.user || data.user.identities?.length === 0) {
-        throw new Error('An account already exists for this email. Please sign in through the Venues V app.');
+        const { error: resendError } = await client.auth.resend({
+          type: 'signup',
+          email,
+          options: signupEmailOptions(),
+        });
+        if (resendError) throw resendError;
       }
 
       document.getElementById('otpEmail').textContent = email;
