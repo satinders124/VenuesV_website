@@ -9,7 +9,7 @@
   "scripts": {
     "check": "node scripts/check.mjs && html-validate public/*.html",
     "dev": "vercel dev",
-    "build": "vercel build"
+    "build": "npm run check"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
