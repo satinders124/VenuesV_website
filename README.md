@@ -16,6 +16,9 @@ all public website code.
   `uid` or `email` query parameters from the mobile app.
 - **Stripe checkout, customer portal and webhooks** run in Vercel serverless
   functions. The service-role key and Stripe secret key stay server-side.
+- **Team invitations, team lookup and team removal** run in authenticated Vercel
+  API routes. New team members receive a Supabase invitation link and choose
+  their own password at `/accept-invite`.
 - The privacy policy and security FAQ now name **Supabase** and **Vercel**.
 
 ## Before deployment
@@ -34,7 +37,7 @@ all public website code.
 3. In Supabase **Authentication → URL Configuration** set:
    - Site URL: `https://venuesv.com`
    - Redirect URLs: `https://venuesv.com/subscribe` and
-     `https://www.venuesv.com/subscribe`
+     `https://www.venuesv.com/subscribe` and `https://www.venuesv.com/accept-invite`
    - Add your Vercel preview URL temporarily if you will test signup there.
 4. In Supabase **Authentication → Providers → Email** enable email confirmation.
    In **Email Templates → Magic Link**, use a template containing
@@ -50,6 +53,10 @@ all public website code.
 
    Configure production SMTP before launch. The default Supabase email service
    is deliberately rate-limited and is not appropriate for a production app.
+
+   In **Email Templates → Invite user**, keep a template containing
+   `{{ .ConfirmationURL }}`. This sends a new team member to
+   `https://venuesv.com/accept-invite`, where they securely choose their own password.
 5. In Stripe, create or confirm the **AUD $19.95 weekly recurring** Price and
    copy its `price_...` ID. Enable/configure the Stripe Customer Portal.
 

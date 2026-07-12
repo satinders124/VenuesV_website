@@ -3,7 +3,8 @@
   "rewrites": [
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/terms", "destination": "/terms.html" },
-    { "source": "/subscribe", "destination": "/subscribe.html" }
+    { "source": "/subscribe", "destination": "/subscribe.html" },
+    { "source": "/accept-invite", "destination": "/accept-invite.html" }
   ],
   "headers": [
     {
