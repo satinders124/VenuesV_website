@@ -66,11 +66,22 @@
 
       if (error) throw error;
 
-      // Supabase intentionally returns a masked user (no identities) if this
-      // email already exists. This commonly happens after a network interruption
-      // created an unconfirmed account. Resend the confirmation code instead of
-      // leaving the owner unable to continue their signup.
+      // Supabase intentionally returns a masked user (no identities) when an
+      // email already exists. First try the original password: a confirmed owner
+      // can resume at the agreements step; an unconfirmed owner receives a new
+      // signup code. This also recovers cleanly from an interrupted first signup.
       if (!data.user || data.user.identities?.length === 0) {
+        const { data: signInData, error: signInError } = await client.auth.signInWithPassword({ email, password });
+
+        if (!signInError && signInData.session) {
+          showStep(3);
+          return;
+        }
+
+        if (!/email not confirmed/i.test(signInError?.message || '')) {
+          throw new Error('An account already exists for this email. Enter the original password to continue, or sign in through the Venues V app.');
+        }
+
         const { error: resendError } = await client.auth.resend({
           type: 'signup',
           email,
