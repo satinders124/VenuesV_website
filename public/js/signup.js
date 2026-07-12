@@ -32,10 +32,6 @@
     return message;
   }
 
-  function signupEmailOptions() {
-    return { emailRedirectTo: `${window.location.origin}/subscribe` };
-  }
-
   window.goStep2 = async () => {
     const name = value('s1Name');
     const email = value('s1Email').toLowerCase();
@@ -55,40 +51,30 @@
     continueButton.innerHTML = '<span class="spin"></span> Sending code...';
 
     try {
-      const { data, error } = await client.auth.signUp({
+      // Match the ProfitPnL registration model: check for an existing account,
+      // then create a passwordless Email OTP signup. Password creation happens
+      // only after the owner proves control of the email by entering the code.
+      const existingResponse = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const existingResult = await existingResponse.json().catch(() => ({}));
+      if (!existingResponse.ok) {
+        throw new Error(existingResult.error || 'Could not validate this email. Please try again.');
+      }
+      if (existingResult.exists) {
+        throw new Error('This email is already registered. Please sign in through the Venues V app.');
+      }
+
+      const { error } = await client.auth.signInWithOtp({
         email,
-        password,
         options: {
-          ...signupEmailOptions(),
+          shouldCreateUser: true,
           data: { name, phone, marketing_opt_in: false },
         },
       });
-
       if (error) throw error;
-
-      // Supabase intentionally returns a masked user (no identities) when an
-      // email already exists. First try the original password: a confirmed owner
-      // can resume at the agreements step; an unconfirmed owner receives a new
-      // signup code. This also recovers cleanly from an interrupted first signup.
-      if (!data.user || data.user.identities?.length === 0) {
-        const { data: signInData, error: signInError } = await client.auth.signInWithPassword({ email, password });
-
-        if (!signInError && signInData.session) {
-          showStep(3);
-          return;
-        }
-
-        if (!/email not confirmed/i.test(signInError?.message || '')) {
-          throw new Error('An account already exists for this email. Enter the original password to continue, or sign in through the Venues V app.');
-        }
-
-        const { error: resendError } = await client.auth.resend({
-          type: 'signup',
-          email,
-          options: signupEmailOptions(),
-        });
-        if (resendError) throw resendError;
-      }
 
       document.getElementById('otpEmail').textContent = email;
       showStep(2);
@@ -110,12 +96,19 @@
     verifyButton.disabled = true;
     verifyButton.innerHTML = '<span class="spin"></span> Verifying...';
     try {
-      const { error } = await client.auth.verifyOtp({
+      const { data, error } = await client.auth.verifyOtp({
         email: signup.email,
         token,
-        type: 'signup',
+        type: 'email',
       });
       if (error) throw error;
+
+      const { error: passwordError } = await client.auth.updateUser({
+        password: signup.password,
+      });
+      if (passwordError) throw passwordError;
+      if (!data.user) throw new Error('Your email was verified, but no user session was created. Please try again.');
+
       showStep(3);
     } catch (error) {
       showError('error2', error?.message || 'Incorrect or expired code. Please try again.');
@@ -128,10 +121,9 @@
     hideError('error2');
     if (!signup.email) return showError('error2', 'Enter your details first, then request another code.');
 
-    const { error } = await client.auth.resend({
-      type: 'signup',
+    const { error } = await client.auth.signInWithOtp({
       email: signup.email,
-      options: signupEmailOptions(),
+      options: { shouldCreateUser: false },
     });
 
     if (error) {

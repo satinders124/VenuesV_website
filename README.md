@@ -37,8 +37,9 @@ all public website code.
      `https://www.venuesv.com/subscribe`
    - Add your Vercel preview URL temporarily if you will test signup there.
 4. In Supabase **Authentication → Providers → Email** enable email confirmation.
-   In **Email Templates → Confirm signup**, use a template containing
-   `{{ .Token }}` so the page's six OTP boxes receive a code, for example:
+   In **Email Templates → Magic Link**, use a template containing
+   `{{ .Token }}` so the page's six OTP boxes receive a code. The website uses
+   Supabase Email OTP (`signInWithOtp`), for example:
 
    ```html
    <h2>Confirm your Venues V account</h2>

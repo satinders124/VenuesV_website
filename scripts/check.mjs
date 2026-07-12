@@ -13,6 +13,7 @@ const requiredFiles = [
   'public/js/supabase-config.js',
   'public/js/signup.js',
   'public/js/subscribe.js',
+  'api/auth/check-email.js',
   'api/subscription-summary.js',
   'api/create-checkout-session.js',
   'api/create-portal-session.js',
@@ -31,6 +32,7 @@ const scripts = [
   'public/js/supabase-config.js',
   'public/js/signup.js',
   'public/js/subscribe.js',
+  'api/auth/check-email.js',
   'api/subscription-summary.js',
   'api/create-checkout-session.js',
   'api/create-portal-session.js',
@@ -55,6 +57,10 @@ const subscribe = readFileSync(path.join(root, 'public/subscribe.html'), 'utf8')
 const sql = readFileSync(path.join(root, 'supabase/migrations/20260712_website_signup_and_billing.sql'), 'utf8');
 if (!index.includes('/js/signup.js') || !index.includes('supabase.js')) {
   throw new Error('Landing page is not wired to the Supabase signup client.');
+}
+const signup = readFileSync(path.join(root, 'public/js/signup.js'), 'utf8');
+if (!signup.includes('signInWithOtp') || !signup.includes("type: 'email'")) {
+  throw new Error('Landing signup must use the Email OTP flow.');
 }
 if (!subscribe.includes('/js/subscribe.js') || !subscribe.includes('supabase.js')) {
   throw new Error('Subscription page is not wired to the Supabase client.');
