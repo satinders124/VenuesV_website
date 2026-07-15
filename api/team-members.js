@@ -6,7 +6,7 @@ import {
   methodNotAllowed,
   setCors,
 } from '../lib/server.js';
-import { getVenueAndCaller, memberResponse } from '../lib/team.js';
+import { ensureMemberProfiles, getVenueAndCaller, memberResponse } from '../lib/team.js';
 
 export default async function handler(req, res) {
   try {
@@ -27,6 +27,8 @@ export default async function handler(req, res) {
       res.status(200).json({ members: [] });
       return;
     }
+
+    await ensureMemberProfiles(memberIds, venue);
 
     const { data, error } = await adminClient()
       .from('users')
