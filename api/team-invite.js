@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     }
 
     const caller = await authenticatedUser(req);
-    const { venue } = await getVenueAndCaller(caller.id, venueId);
+    const { venue } = await getVenueAndCaller(caller.id, venueId, { requireManager: true });
 
     let invitedUser = await findAuthUserByEmail(email);
     const existed = Boolean(invitedUser);

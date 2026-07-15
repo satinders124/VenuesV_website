@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     }
 
     const caller = await authenticatedUser(req);
-    const { venue } = await getVenueAndCaller(caller.id, venueId);
+    const { venue } = await getVenueAndCaller(caller.id, venueId, { requireManager: true });
     await removeUserFromVenue({ uid: targetUid, venue });
 
     res.status(200).json({ success: true });
