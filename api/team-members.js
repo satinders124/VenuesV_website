@@ -30,7 +30,10 @@ export default async function handler(req, res) {
 
     const { data, error } = await adminClient()
       .from('users')
-      .select('uid, name, email, role, venue, venues, expoPushToken')
+      // Select the row then return an explicit safe allowlist below. This keeps
+      // team listing compatible with existing projects that have not yet added
+      // optional expoPushToken, billing or profile columns.
+      .select('*')
       .in('uid', memberIds);
     if (error) throw error;
 
