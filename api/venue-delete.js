@@ -67,9 +67,15 @@ export default async function handler(req, res) {
       // If exact owner mismatch, check if venue owner is orphaned (deleted account) – allow current owner to clean up
       // This handles the case: owner deletes account and re-registers with same email but new uid – old venues become orphaned
       const { data: ownerExists } = await supabase.from('users').select('uid').eq('uid', venue.ownerId).maybeSingle();
-      const { data: authOwner } = await supabase.auth.admin.getUserById(venue.ownerId).catch(() => ({ data: { user: null } } as any));
+      let authOwner = null;
+      try {
+        const result = await supabase.auth.admin.getUserById(venue.ownerId);
+        authOwner = result.data?.user || null;
+      } catch {
+        authOwner = null;
+      }
 
-      const isOrphaned = !ownerExists && !authOwner?.user;
+      const isOrphaned = !ownerExists && !authOwner;
       if (!isOrphaned) {
         const error = new Error('Only the venue owner can delete a venue.');
         error.statusCode = 403;
