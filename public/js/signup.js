@@ -121,18 +121,44 @@
     hideError('error2');
     if (!signup.email) return showError('error2', 'Enter your details first, then request another code.');
 
+    const btn = document.getElementById('btn2');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> Resending...';
+
+    // Cooldown to prevent Supabase rate limit (default email service is rate-limited)
+    const now = Date.now();
+    if (window._lastResend && now - window._lastResend < 60000) {
+      const wait = Math.ceil((60000 - (now - window._lastResend))/1000);
+      showError('error2', `Please wait ${wait}s before requesting another code. Check spam folder – Supabase default email is rate-limited. For production, configure SMTP in Supabase Dashboard > Auth > Email Templates.`);
+      btn.disabled = false;
+      btn.textContent = originalText;
+      return;
+    }
+    window._lastResend = now;
+
     const { error } = await client.auth.signInWithOtp({
       email: signup.email,
       options: { shouldCreateUser: false },
     });
 
     if (error) {
-      showError('error2', error.message || 'Could not resend the code. Please try again.');
+      const msg = error.message || 'Could not resend the code.';
+      // Provide actionable help for common Supabase email issues
+      if (/rate limit|too many|429/i.test(msg)) {
+        showError('error2', 'Rate limit: Supabase default email is limited. Wait 60s, check spam, or configure production SMTP (Supabase > Auth > SMTP) with your own provider.');
+      } else {
+        showError('error2', msg + ' – Check spam folder, ensure email is correct, and that Supabase Email Templates contain {{ .Token }} for OTP.');
+      }
+      btn.disabled = false;
+      btn.textContent = originalText;
       return;
     }
 
     const notice = document.getElementById('otpResendMsg');
-    if (notice) notice.textContent = 'Code resent — check your inbox.';
+    if (notice) notice.textContent = 'Code resent — check inbox + spam. Valid for 10 min. If not received, your email provider may block Supabase default sender – configure custom SMTP in Supabase.';
+    btn.disabled = false;
+    btn.textContent = originalText;
   };
 
   window.goStep4 = async () => {

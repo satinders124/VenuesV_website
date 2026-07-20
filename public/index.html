@@ -1136,16 +1136,21 @@ footer{padding:72px 0 32px;}
 
 
     <!-- SUCCESS -->
-    <div id="stepSuccess" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:56px;margin-bottom:20px;">🎉</div>
-      <h2 style="font-size:24px;font-weight:900;margin-bottom:12px;">You're all set!</h2>
-      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.2);border-radius:99px;padding:6px 16px;font-size:12px;color:var(--brand);font-weight:600;margin:0 0 20px;">
-        ✅ 14-day free trial started
+    <div id="stepSuccess" style="display:none;text-align:center;padding:12px 0;">
+      <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+      <h2 style="font-size:24px;font-weight:900;margin-bottom:8px;">Free trial started!</h2>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,150,.12);border:1px solid rgba(0,200,150,.25);border-radius:99px;padding:6px 16px;font-size:12px;color:var(--brand);font-weight:700;margin:0 0 16px;">
+        ✅ 14 days • Full OS access • No card
       </div>
-      <p style="font-size:14px;color:var(--muted2);line-height:1.7;margin-bottom:24px;">
-        Your email is verified and your 14-day trial is active. Download the Venues V app and sign in with the email and password you just created.
-      </p>
-      <button onclick="closeSignup()" class="modal-btn modal-btn-primary" style="max-width:280px;margin:0 auto;">Done →</button>
+      <div style="background:#080a0e;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:left;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:800;letter-spacing:0.6px;text-transform:uppercase;color:var(--muted);margin-bottom:10;">Your trial is live in app • Premium OS</div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(0,200,150,0.1);border:1px solid rgba(0,200,150,0.2);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:12px;">✓</div><div><div style="font-size:13px;font-weight:600;color:var(--text);">Open VenuesV app → More → Billing</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Shows trial countdown, venues, $19.95/week pricing • Premium command center</div></div></div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(77,159,255,0.1);border:1px solid rgba(77,159,255,0.2);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:12px;">📧</div><div><div style="font-size:13px;font-weight:600;color:var(--text);">No separate trial email – RLS secured</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Supabase default email is for OTP only (rate-limited). Trial status is in app More → Billing OS. For production, configure SMTP: Supabase Dashboard → Auth → SMTP + Email Templates (Magic Link template must contain {{ .Token }})</div></div></div>
+        <div style="display:flex;gap:10px;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);display:flex;align-items:center;justify-content:center;color:var(--yellow);font-size:12px;">⚡</div><div><div style="font-size:13px;font-weight:600;color:var(--text);">Download app, sign in with same email + password</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Your trial is active immediately – no email needed. Check More → Account OS for countdown.</div></div></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:16px;">Email not received? Check spam + Promotions. Supabase default sender is rate-limited. Resend waits 60s. For reliable delivery, set custom SMTP in Supabase. Trial confirmation is shown in app, not via separate email.</p>
+      <button onclick="closeSignup()" class="modal-btn modal-btn-primary" style="max-width:320px;margin:0 auto;">Open App → More → Billing OS</button>
+      <div style="margin-top:12px;"><a href="https://client.venuesv.com" style="font-size:12px;color:var(--muted2);text-decoration:none;">Go to Owner Dashboard →</a></div>
     </div>
   </div>
 </div>
