@@ -166,7 +166,7 @@ begin
 
   select "subscriptionStatus" into current_status
   from public.users
-  where uid = auth.uid()
+  where uid::text = auth.uid()::text
   for update;
 
   if current_status is null then
@@ -184,7 +184,7 @@ begin
       "marketingOptIn" = coalesce(p_marketing_opt_in, false),
       "termsAcceptedAt" = timezone('utc', now()),
       "privacyAcceptedAt" = timezone('utc', now())
-  where uid = auth.uid();
+  where uid::text = auth.uid()::text;
 end;
 $$;
 
@@ -197,13 +197,13 @@ alter table public.users enable row level security;
 drop policy if exists users_select_own_profile on public.users;
 create policy users_select_own_profile
   on public.users for select to authenticated
-  using (uid = auth.uid());
+  using (uid::text = auth.uid()::text);
 
 drop policy if exists users_update_own_profile on public.users;
 create policy users_update_own_profile
   on public.users for update to authenticated
-  using (uid = auth.uid())
-  with check (uid = auth.uid());
+  using (uid::text = auth.uid()::text)
+  with check (uid::text = auth.uid()::text);
 
 -- Do not create an INSERT policy for authenticated/anon users. New profiles come
 -- from the auth trigger above; staff accounts should be invited server-side.

@@ -173,7 +173,7 @@ begin
     if meta_role is not null then
       update public.users
       set role = meta_role
-      where uid = rec.uid
+      where uid::text = rec.uid::text
         and role = 'owner'
         and not exists (select 1 from public.venues v where v."ownerId"::text = rec.uid::text);
 
