@@ -127,7 +127,7 @@ create policy venues_select_assigned
   on public.venues for select
   to authenticated
   using (
-    auth.uid() = any("assignedUids")
+    auth.uid()::text = any("assignedUids")
     -- Note: uses the ANY() operator for Postgres arrays, which works with
     -- both text[] and jsonb column types for assignedUids.
   );
@@ -163,7 +163,7 @@ create policy zones_select_venue_access
     exists (
       select 1 from public.venues v
       where v.id = zones."venueId"
-        and (v."ownerId" = auth.uid() or auth.uid() = any(v."assignedUids"))
+        and (v."ownerId" = auth.uid() or auth.uid()::text = any(v."assignedUids"))
     )
   );
 
@@ -176,7 +176,7 @@ create policy tasks_select_venue_access
     exists (
       select 1 from public.venues v
       where v.id = tasks."venueId"
-        and (v."ownerId" = auth.uid() or auth.uid() = any(v."assignedUids"))
+        and (v."ownerId" = auth.uid() or auth.uid()::text = any(v."assignedUids"))
     )
   );
 
@@ -189,7 +189,7 @@ create policy issues_select_venue_access
     exists (
       select 1 from public.venues v
       where v.id = issues."venueId"
-        and (v."ownerId" = auth.uid() or auth.uid() = any(v."assignedUids"))
+        and (v."ownerId" = auth.uid() or auth.uid()::text = any(v."assignedUids"))
     )
   );
 
@@ -201,8 +201,8 @@ create policy chat_messages_select_venue_access
   using (
     exists (
       select 1 from public.venues v
-      where v.id = chat_messages."roomId"
-        and (v."ownerId" = auth.uid() or auth.uid() = any(v."assignedUids"))
+      where v.id::text = chat_messages."roomId"
+        and (v."ownerId" = auth.uid() or auth.uid()::text = any(v."assignedUids"))
     )
   );
 
@@ -215,8 +215,8 @@ create policy chat_messages_insert_venue_access
     -- Venue group chat: sender must be assigned to the venue
     exists (
       select 1 from public.venues v
-      where v.id = chat_messages."roomId"
-        and (v."ownerId" = auth.uid() or auth.uid() = any(v."assignedUids"))
+      where v.id::text = chat_messages."roomId"
+        and (v."ownerId" = auth.uid() or auth.uid()::text = any(v."assignedUids"))
     )
     -- DM rooms (roomId starts with dm_) are allowed for all authenticated users
     or chat_messages."roomId" like 'dm\_%'
