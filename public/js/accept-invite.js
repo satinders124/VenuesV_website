@@ -22,6 +22,24 @@
   }
 
   async function loadInvitation() {
+    // Handle PKCE ?code= flow (Supabase invite links sometimes use code exchange)
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (code) {
+      try {
+        const { data: exchanged, error: exchangeError } = await client.auth.exchangeCodeForSession(window.location.href);
+        if (exchangeError) throw exchangeError;
+        if (exchanged?.session) {
+          activate(exchanged.session);
+          // Clean URL to remove code
+          window.history.replaceState({}, document.title, window.location.pathname);
+          return;
+        }
+      } catch (e) {
+        console.warn('Code exchange failed', e);
+      }
+    }
+
     const { data } = await client.auth.getSession();
     if (data.session) {
       activate(data.session);

@@ -36,15 +36,28 @@ export default async function handler(req, res) {
     const { venue } = await getVenueAndCaller(caller.id, venueId, { requireManager: true });
 
     let invitedUser = await findAuthUserByEmail(email);
-    const existed = Boolean(invitedUser);
+    let existed = Boolean(invitedUser);
     if (!invitedUser) {
       const { data, error } = await adminClient().auth.admin.inviteUserByEmail(email, {
         data: { name, role, venue: venue.name },
         redirectTo: `${siteUrl()}/accept-invite`,
       });
-      if (error) throw error;
-      if (!data.user) throw new Error('Supabase did not create the invited user.');
-      invitedUser = data.user;
+      if (error) {
+        // If race condition: user was created between list and invite, recover
+        if (/already exists|already registered/i.test(error.message || '')) {
+          invitedUser = await findAuthUserByEmail(email);
+          if (invitedUser) {
+            existed = true;
+          } else {
+            throw new Error('An account with this email already exists, but could not be found. Please try again.');
+          }
+        } else {
+          throw error;
+        }
+      } else {
+        if (!data.user) throw new Error('Supabase did not create the invited user.');
+        invitedUser = data.user;
+      }
     }
 
     await addUserToVenue({
