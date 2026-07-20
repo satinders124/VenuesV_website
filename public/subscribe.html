@@ -1,154 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Subscribe — Venues V</title>
-  <link rel="icon" type="image/png" href="/icon.png"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',-apple-system,sans-serif;background:#080a0e;color:#eef0f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-    .wrap{width:100%;max-width:480px;}
-    .brand{display:flex;align-items:center;gap:12px;margin-bottom:40px;justify-content:center;}
-    .brand img{height:40px;border-radius:10px;}
-    .brand-name{font-size:20px;font-weight:800;color:#eef0f4;}
-    .card{background:#0f1218;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px;}
-    .title{font-size:26px;font-weight:900;margin-bottom:8px;letter-spacing:-.5px;}
-    .sub{font-size:14px;color:#6e7a8a;margin-bottom:28px;line-height:1.6;}
-    .price-box{background:#080a0e;border:1px solid rgba(0,200,150,.2);border-radius:14px;padding:20px;margin-bottom:24px;}
-    .price-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-    .price-label{font-size:13px;color:#6e7a8a;}
-    .price-val{font-size:13px;font-weight:600;color:#eef0f4;}
-    .price-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:12px;}
-    .price-total-label{font-size:14px;font-weight:600;color:#eef0f4;}
-    .price-total-val{font-size:28px;font-weight:900;color:#00c896;}
-    .price-total-period{font-size:13px;color:#6e7a8a;margin-left:4px;}
-    .venue-counter{display:flex;align-items:center;justify-content:space-between;background:#161b24;border-radius:10px;padding:14px 16px;margin-bottom:24px;}
-    .venue-counter-label{font-size:14px;font-weight:600;}
-    .counter-controls{display:flex;align-items:center;gap:16px;}
-    .counter-btn{width:32px;height:32px;border-radius:8px;background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.3);color:#00c896;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-    .counter-btn:hover{background:rgba(0,200,150,.2);}
-    .counter-btn:disabled{opacity:.4;cursor:not-allowed;}
-    .counter-val{font-size:20px;font-weight:900;color:#eef0f4;min-width:24px;text-align:center;}
-    .features{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
-    .feature{display:flex;align-items:center;gap:10px;font-size:13px;color:#8892aa;}
-    .feature-dot{width:6px;height:6px;border-radius:50%;background:#00c896;flex-shrink:0;}
-    .btn{width:100%;background:#00c896;color:#000;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:8px;}
-    .btn:hover{background:#00b588;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,200,150,.25);}
-    .btn:disabled{background:#161b24;color:#3a4252;cursor:not-allowed;transform:none;box-shadow:none;}
-    .spin{width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    .err{background:rgba(242,78,110,.1);border:1px solid rgba(242,78,110,.2);border-radius:10px;padding:12px 16px;font-size:13px;color:#f24e6e;margin-bottom:16px;display:none;}
-    .note{text-align:center;font-size:12px;color:#3a4252;margin-top:16px;line-height:1.6;}
-    .note a{color:#6e7a8a;text-decoration:none;}
-    .note a:hover{color:#00c896;}
-    /* Success state */
-    .success{display:none;text-align:center;padding:20px 0;}
-    .success-icon{font-size:56px;margin-bottom:16px;}
-    .success-title{font-size:24px;font-weight:900;margin-bottom:8px;}
-    .success-sub{font-size:14px;color:#6e7a8a;line-height:1.6;}
-    /* Cancelled state */
-    .cancelled{display:none;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:14px 16px;font-size:13px;color:#f5a623;margin-bottom:20px;}
-
-    .auth-loading{text-align:center;color:#6e7a8a;font-size:14px;padding:30px 0;}
-    .form-field{margin-bottom:14px;}
-    .form-field label{display:block;font-size:11px;font-weight:700;color:#6e7a8a;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
-    .form-field input{width:100%;background:#161b24;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:13px 14px;color:#eef0f4;font:inherit;outline:none;}
-    .form-field input:focus{border-color:#00c896;}
-    .account-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:#6e7a8a;margin:-8px 0 20px;}
-    .account-row strong{color:#eef0f4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .text-button{background:transparent;border:0;color:#00c896;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:4px 0;}
-    .static-count{font-size:20px;font-weight:900;color:#eef0f4;min-width:24px;text-align:center;}
-  </style>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Subscribe — VenuesV OS</title>
+<link rel="icon" type="image/png" href="/icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;} :root{--bg:#060810;--card:#0c0f1a;--card2:#111520;--border:rgba(255,255,255,.07);--text:#f0f2f8;--muted:#5a6480;--muted2:#8892aa;--brand:#00c896;--brand-dark:#00a87e;--red:#f24e6e;--amber:#f5a623;--blue:#4d9fff;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px;}
+.wrap{width:100%;max-width:960px;margin-top:20px;}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:space-between;}
+.brand-left{display:flex;align-items:center;gap:12px;}
+.brand img{height:36px;border-radius:8px;}
+.brand-name{font-size:18px;font-weight:900;letter-spacing:-0.3px;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.2);border-radius:99px;padding:5px 12px;font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--brand);}
+.grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;}
+@media(max-width:840px){.grid{grid-template-columns:1fr;}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,200,150,0.5),transparent);}
+.title{font-size:26px;font-weight:900;letter-spacing:-0.6px;margin-bottom:8px;}
+.sub{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:20px;}
+.account-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted);margin-bottom:18px;background:#080a0e;border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
+.account-row strong{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;}
+.text-button{background:transparent;border:0;color:var(--brand);font:inherit;font-size:11px;font-weight:800;cursor:pointer;padding:4px 0;}
+.venue-counter{display:flex;align-items:center;justify-content:space-between;background:#080a0e;border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
+.venue-counter-label{font-size:12px;font-weight:700;letter-spacing:0.3px;}
+.static-count{font-size:20px;font-weight:900;color:var(--text);min-width:24px;text-align:center;}
+.price-box{background:linear-gradient(135deg, rgba(0,200,150,0.06), rgba(0,200,150,0.02));border:1px solid rgba(0,200,150,.2);border-radius:14px;padding:18px;margin-bottom:16px;}
+.price-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.price-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.4px;text-transform:uppercase;}
+.price-val{font-size:12px;font-weight:700;color:var(--text);}
+.price-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:14px;border-top:1px solid var(--border);margin-top:12px;}
+.price-total-label{font-size:13px;font-weight:700;color:var(--text);}
+.price-total-val{font-size:28px;font-weight:900;color:var(--brand);letter-spacing:-0.8px;}
+.price-total-period{font-size:11px;color:var(--muted);margin-left:4px;}
+.features{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.feature{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted2);}
+.feature-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0;}
+.btn{width:100%;background:var(--brand);color:#000;border:none;border-radius:12px;padding:15px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn:hover{background:var(--brand-dark);transform:translateY(-1px);box-shadow:0 12px 24px rgba(0,200,150,.25);}
+.btn:disabled{background:#161b24;color:#3a4252;cursor:not-allowed;transform:none;box-shadow:none;}
+.spin{width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;} @keyframes spin{to{transform:rotate(360deg);}}
+.err{background:rgba(242,78,110,.1);border:1px solid rgba(242,78,110,.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--red);margin-bottom:14px;display:none;}
+.cancelled{display:none;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--amber);margin-bottom:16px;}
+.auth-loading{text-align:center;color:var(--muted);font-size:13px;padding:30px 0;}
+.form-field{margin-bottom:12px;} .form-field label{display:block;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;} .form-field input{width:100%;background:#080a0e;border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font:inherit;outline:none;} .form-field input:focus{border-color:var(--brand);}
+.note{text-align:center;font-size:11px;color:#3a4252;margin-top:14px;line-height:1.6;} .note a{color:var(--muted2);text-decoration:none;} .note a:hover{color:var(--brand);}
+.success{display:none;text-align:center;padding:20px 0;} .success-icon{font-size:48px;margin-bottom:12px;} .success-title{font-size:22px;font-weight:900;margin-bottom:8px;} .success-sub{font-size:13px;color:var(--muted2);line-height:1.6;}
+.os-card{background:#080a0e;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;}
+.os-label{font-size:10px;font-weight:800;letter-spacing:0.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.os-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.os-row:last-child{border-bottom:none;}
+.os-val{font-weight:700;color:var(--text);}
+.os-trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.os-badge{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:99px;padding:6px 12px;font-size:10px;color:var(--muted2);}
+.os-badge strong{color:var(--text);}
+</style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">
-    <img src="/icon.png" alt="Venues V"/>
-    <div class="brand-name">Venues V</div>
+    <div class="brand-left"><img src="/icon.png" alt="Venues V"/><div><div class="brand-name">VenuesV OS</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Client Dashboard • Secure Billing</div></div></div>
+    <div class="badge">● Live • Stripe Secure</div>
   </div>
 
-  <div class="card">
-    <div id="authLoading" class="auth-loading">Checking your secure sign-in…</div>
+  <div class="grid">
+    <!-- LEFT: Checkout -->
+    <div class="card">
+      <div id="authLoading" class="auth-loading">Checking secure session…</div>
 
-    <div id="signInForm" style="display:none">
-      <div class="title">Sign in to subscribe</div>
-      <div class="sub">Use the same Venues V account you use in the app. Your payment details are handled securely by Stripe.</div>
-      <form onsubmit="signInForSubscription(event)">
-        <div class="form-field">
-          <label for="signinEmail">Email address</label>
-          <input id="signinEmail" type="email" autocomplete="email" placeholder="you@yourpub.com.au"/>
-        </div>
-        <div class="form-field">
-          <label for="signinPassword">Password</label>
-          <input id="signinPassword" type="password" autocomplete="current-password" placeholder="Your password"/>
-        </div>
-        <div class="err" id="authError"></div>
-        <button class="btn" id="signinButton" type="submit">Sign in and continue →</button>
-      </form>
-      <div class="note">Need an account? <a href="/">Start your 14-day free trial</a>.</div>
-    </div>
-
-    <div id="subscribeForm" style="display:none">
-      <div class="title" id="subscribeTitle">Start your subscription</div>
-      <div class="sub" id="subscribeIntro">Subscribe to keep managing your venues.</div>
-      <div class="account-row"><span>Signed in as <strong id="accountEmail"></strong></span><button class="text-button" type="button" onclick="signOutOfSubscription()">Sign out</button></div>
-
-      <div class="cancelled" id="cancelledMsg">
-        Payment cancelled — no charge was made. You can try again below.
+      <div id="signInForm" style="display:none">
+        <div class="title">Sign in to manage billing</div>
+        <div class="sub">Use same VenuesV owner account as app. Billing, venues, team – all managed here on web dashboard, not in mobile More.</div>
+        <form onsubmit="signInForSubscription(event)">
+          <div class="form-field"><label>Email</label><input id="signinEmail" type="email" autocomplete="email" placeholder="you@yourpub.com.au"/></div>
+          <div class="form-field"><label>Password</label><input id="signinPassword" type="password" autocomplete="current-password" placeholder="Your password"/></div>
+          <div class="err" id="authError"></div>
+          <button class="btn" id="signinButton" type="submit">Sign in → Premium OS</button>
+        </form>
+        <div class="note">Need account? <a href="/">Start 14-day trial (2 venues)</a></div>
       </div>
 
-      <div class="venue-counter">
-        <div class="venue-counter-label">Venues on your account</div>
-        <div class="static-count" id="venueCount">1</div>
-      </div>
+      <div id="subscribeForm" style="display:none">
+        <div class="title" id="subscribeTitle">Start subscription OS</div>
+        <div class="sub" id="subscribeIntro">Manage venues, team, billing here – mobile More shows status only, not spend.</div>
+        <div class="account-row"><span>Signed in as <strong id="accountEmail"></strong></span><button class="text-button" onclick="signOutOfSubscription()">Sign out</button></div>
+        <div class="cancelled" id="cancelledMsg">Payment cancelled — no charge. Try again.</div>
 
-      <div class="price-box">
-        <div class="price-row">
-          <span class="price-label">Price per venue</span>
-          <span class="price-val">$19.95 AUD / week</span>
+        <div class="venue-counter"><div class="venue-counter-label">Venues on your account • Trial limit 2 → unlimited after sub</div><div class="static-count" id="venueCount">1</div></div>
+
+        <div class="price-box">
+          <div class="price-row"><span class="price-label">Price per venue</span><span class="price-val">$19.95 AUD / week</span></div>
+          <div class="price-row"><span class="price-label">Venues</span><span class="price-val" id="priceVenueCount">1</span></div>
+          <div class="price-row"><span class="price-label">Trial</span><span class="price-val">2 venues free, 14 days</span></div>
+          <div class="price-total"><span class="price-total-label">Total</span><div style="display:flex;align-items:baseline;gap:4px;"><span class="price-total-val" id="priceTotal">$19.95</span><span class="price-total-period">AUD / week</span></div></div>
         </div>
-        <div class="price-row">
-          <span class="price-label">Venues</span>
-          <span class="price-val" id="priceVenueCount">1</span>
-        </div>
-        <div class="price-total">
-          <span class="price-total-label">Total</span>
-          <div style="display:flex;align-items:baseline;gap:4px;">
-            <span class="price-total-val" id="priceTotal">$19.95</span>
-            <span class="price-total-period">AUD / week</span>
+
+        <div class="os-card">
+          <div class="os-label">What you manage here (web dashboard OS)</div>
+          <div class="os-row"><span>Add / Remove Venues</span><span class="os-val">Unlimited + prorated</span></div>
+          <div class="os-row"><span>Team Members</span><span class="os-val">Invite by role • RLS secured</span></div>
+          <div class="os-row"><span>Tasks / Issues / Zones</span><span class="os-val">Full CRUD via web + app</span></div>
+          <div class="os-row"><span>Billing & Invoices</span><span class="os-val">Stripe portal • Cancel anytime</span></div>
+          <div class="os-trust">
+            <div class="os-badge">🔒 <strong>RLS</strong> isolated</div>
+            <div class="os-badge">⚡ <strong>Stripe</strong> PCI</div>
+            <div class="os-badge">📱 <strong>App + Web</strong> sync</div>
           </div>
         </div>
+
+        <div class="features">
+          <div class="feature"><div class="feature-dot"></div>Owner dashboard at client.venuesv.com – full OS</div>
+          <div class="feature"><div class="feature-dot"></div>Mobile More = status only, no spend – spend shown here</div>
+          <div class="feature"><div class="feature-dot"></div>Add/remove venues anytime – prorated, managed here</div>
+          <div class="feature"><div class="feature-dot"></div>Team chat, tasks, issues – real-time across web + app</div>
+        </div>
+
+        <div class="err" id="errMsg"></div>
+        <button class="btn" id="checkoutBtn" onclick="startCheckout()">Continue to Stripe →</button>
+        <div class="note">Secure via Stripe • Cancel anytime • By subscribing you agree to <a href="/terms">Terms</a> and <a href="/privacy">Privacy</a></div>
       </div>
 
-      <div class="features">
-        <div class="feature"><div class="feature-dot"></div>Unlimited tasks, issues and zones per venue</div>
-        <div class="feature"><div class="feature-dot"></div>Team chat — group and direct messaging</div>
-        <div class="feature"><div class="feature-dot"></div>Push notifications for issues and messages</div>
-        <div class="feature"><div class="feature-dot"></div>Owner dashboard at client.venuesv.com</div>
-        <div class="feature"><div class="feature-dot"></div>Add or remove venues anytime — prorated billing</div>
-        <div class="feature"><div class="feature-dot"></div>Cancel anytime</div>
-      </div>
-
-      <div class="err" id="errMsg"></div>
-      <button class="btn" id="checkoutBtn" type="button" onclick="startCheckout()">Continue to Stripe →</button>
-      <div class="note">
-        Secure payment via Stripe · Cancel anytime<br/>
-        By subscribing you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>
+      <div class="success" id="successState">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Payment secured • OS active</div>
+        <div class="success-sub">Subscription live. You can now add unlimited venues, manage team, and ops from web dashboard + app. Status syncs in app More → Billing OS.</div>
+        <br/>
+        <a href="venuesv://subscription-success" style="display:inline-block;background:var(--brand);color:#000;font-weight:800;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:13px;margin-top:8px;">Open VenuesV App → More</a>
+        <p style="font-size:11px;color:var(--muted);margin-top:14px;">If app doesn't open, open VenuesV manually – More screen will show Active.</p>
       </div>
     </div>
 
-    <div class="success" id="successState">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Payment received</div>
-      <div class="success-sub">
-        Your payment was received. Subscription status can take a few seconds to update, then you can continue in the Venues V app.
+    <!-- RIGHT: Premium context -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="card" style="padding:20px;">
+        <div class="os-label">Trial → Paid Flow • Premium OS</div>
+        <div style="font-size:14px;font-weight:800;margin-bottom:8px;">2 venues free in trial</div>
+        <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:12px;">Experience multi-venue aggregated health. On 3rd venue, you hit paywall → subscribe here. Keeps zones, tasks, team. No per-user fees.</div>
+        <div style="background:#080a0e;border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">Trial</div><div style="font-size:14px;font-weight:800;">2 venues • 14 days</div></div>
+          <div style="font-size:20px;">→</div>
+          <div><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">After</div><div style="font-size:14px;font-weight:800;color:var(--brand);">Unlimited • $19.95/w</div></div>
+        </div>
       </div>
-      <br/>
-      <a href="venuesv://subscription-success" style="display:inline-block;background:#00c896;color:#000;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;margin-top:8px;">Open Venues V App →</a>
-      <p style="font-size:12px;color:#5a6480;margin-top:16px;">If the app does not open, simply open Venues V and sign in again.</p>
+
+      <div class="card" style="padding:20px;">
+        <div class="os-label">Why web dashboard for billing?</div>
+        <div style="font-size:13px;color:var(--muted2);line-height:1.6;">
+          Mobile More shows <strong style="color:var(--text)">status only</strong> (trial days, active/locked) – not spend. All spend, venue add/remove, team invites are managed here on web OS for security + Stripe compliance. App stays focused on ops (tasks, issues, chat).
+        </div>
+        <div class="os-trust">
+          <div class="os-badge">📊 <strong>Web</strong> = billing, venues, team</div>
+          <div class="os-badge">📱 <strong>App</strong> = ops, tasks, issues, chat</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="os-label">Trust • Security • AU</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+          <div style="display:flex;gap:10px;align-items:center;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(0,200,150,0.1);border:1px solid rgba(0,200,150,0.2);display:flex;align-items:center;justify-content:center;color:var(--brand);">🔒</div><div><div style="font-size:12px;font-weight:700;">RLS isolated per business</div><div style="font-size:11px;color:var(--muted);">Your venues only – Supabase Row Level Security</div></div></div>
+          <div style="display:flex;gap:10px;align-items:center;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(77,159,255,0.1);border:1px solid rgba(77,159,255,0.2);display:flex;align-items:center;justify-content:center;color:var(--blue);">💳</div><div><div style="font-size:12px;font-weight:700;">Stripe PCI compliant</div><div style="font-size:11px;color:var(--muted);">No card stored on our servers</div></div></div>
+          <div style="display:flex;gap:10px;align-items:center;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);display:flex;align-items:center;justify-content:center;color:var(--amber);">⚡</div><div><div style="font-size:12px;font-weight:700;">Cancel anytime • Prorated</div><div style="font-size:11px;color:var(--muted);">Add/remove venues, quantity auto-syncs</div></div></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
