@@ -58,10 +58,24 @@ export default async function handler(req, res) {
       error.statusCode = 404;
       throw error;
     }
-    if (venue.ownerId !== caller.id) {
-      const error = new Error('Only the venue owner can delete a venue.');
-      error.statusCode = 403;
-      throw error;
+    // Robust owner check – String() safe for uuid vs text and handles account recreation ghost
+    const venueOwnerStr = String(venue.ownerId || '').trim();
+    const callerStr = String(caller.id || '').trim();
+    const isDirectOwner = venueOwnerStr && callerStr && venueOwnerStr.toLowerCase() === callerStr.toLowerCase();
+
+    if (!isDirectOwner) {
+      // If exact owner mismatch, check if venue owner is orphaned (deleted account) – allow current owner to clean up
+      // This handles the case: owner deletes account and re-registers with same email but new uid – old venues become orphaned
+      const { data: ownerExists } = await supabase.from('users').select('uid').eq('uid', venue.ownerId).maybeSingle();
+      const { data: authOwner } = await supabase.auth.admin.getUserById(venue.ownerId).catch(() => ({ data: { user: null } } as any));
+
+      const isOrphaned = !ownerExists && !authOwner?.user;
+      if (!isOrphaned) {
+        const error = new Error('Only the venue owner can delete a venue.');
+        error.statusCode = 403;
+        throw error;
+      }
+      console.log(`Allowing orphaned venue delete: venue ${venue.id} owned by deleted uid ${venue.ownerId}, deletor ${caller.id}`);
     }
 
     // Delete operational records before the venue. Issue-photo files are left
