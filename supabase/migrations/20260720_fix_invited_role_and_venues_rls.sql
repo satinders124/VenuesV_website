@@ -302,6 +302,28 @@ create table if not exists public.read_receipts (
   "readAt" timestamptz not null default timezone('utc', now())
 );
 
+-- read_receipts RLS: users can only see and manage their own receipts
+alter table if exists public.read_receipts enable row level security;
+
+drop policy if exists read_receipts_select_own on public.read_receipts;
+create policy read_receipts_select_own
+  on public.read_receipts for select
+  to authenticated
+  using ("userId" = auth.uid()::text);
+
+drop policy if exists read_receipts_insert_own on public.read_receipts;
+create policy read_receipts_insert_own
+  on public.read_receipts for insert
+  to authenticated
+  with check ("userId" = auth.uid()::text);
+
+drop policy if exists read_receipts_update_own on public.read_receipts;
+create policy read_receipts_update_own
+  on public.read_receipts for update
+  to authenticated
+  using ("userId" = auth.uid()::text)
+  with check ("userId" = auth.uid()::text);
+
 -- Indexes for query performance (used by many screens)
 create index if not exists idx_venues_ownerid on public.venues("ownerId");
 create index if not exists idx_zones_venueid on public.zones("venueId");
