@@ -13,6 +13,14 @@ create table if not exists public.chat_messages (
   "created_at" timestamptz not null default timezone('utc', now())
 );
 
+-- IMPORTANT: Enable RLS immediately after creation to avoid Supabase warning
+-- "This query creates a table without enabling Row Level Security"
+alter table if exists public.chat_messages enable row level security;
+alter table if exists public.venues enable row level security;
+alter table if exists public.tasks enable row level security;
+alter table if exists public.issues enable row level security;
+alter table if exists public.zones enable row level security;
+
 -- Add missing columns if table existed without them (pre 20260721)
 alter table public.chat_messages add column if not exists "roomId" text not null default '';
 alter table public.chat_messages add column if not exists text text not null default '';
