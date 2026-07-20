@@ -166,7 +166,7 @@ begin
     select a.raw_user_meta_data ->> 'role'
     into meta_role
     from auth.users a
-    where a.id = rec.uid
+    where a.id::text = rec.uid::text
       and a.raw_user_meta_data ->> 'role' = any(valid_roles);
 
     -- Only update if we found a valid non-owner role in metadata
