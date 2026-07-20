@@ -159,7 +159,7 @@ begin
     from public.users u
     where u.role = 'owner'
       and not exists (
-        select 1 from public.venues v where v."ownerId" = u.uid
+        select 1 from public.venues v where v."ownerId"::text = u.uid::text
       )
   loop
     -- Check if auth user_metadata has a valid invite role
@@ -175,7 +175,7 @@ begin
       set role = meta_role
       where uid = rec.uid
         and role = 'owner'
-        and not exists (select 1 from public.venues v where v."ownerId" = rec.uid);
+        and not exists (select 1 from public.venues v where v."ownerId"::text = rec.uid::text);
 
       raise notice 'Fixed role for uid %: owner → %', rec.uid, meta_role;
     end if;
