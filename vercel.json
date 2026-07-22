@@ -2,6 +2,26 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "client.venuesv.com"
+        }
+      ],
+      "destination": "/client.html"
+    },
+    {
+      "source": "/((?!api|_next|_vercel|privacy|terms|subscribe|accept-invite|icon.png|js|client.html).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "client.venuesv.com"
+        }
+      ],
+      "destination": "/client.html"
+    },
+    {
       "source": "/privacy",
       "destination": "/privacy.html"
     },
